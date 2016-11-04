@@ -10,8 +10,20 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.zou.autotouch.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <Button android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:text="start"
+        android:id="@+id/btn_start"/>
+
+    <Button android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="button1"
+        android:id="@+id/btn1"
+        android:layout_toRightOf="@id/btn_start"/>
+
+    <Button android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="stop"
+        android:id="@+id/btn_stop"
+        android:layout_toRightOf="@+id/btn1"/>
 </RelativeLayout>

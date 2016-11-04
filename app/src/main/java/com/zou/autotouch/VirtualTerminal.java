@@ -24,6 +24,7 @@ public class VirtualTerminal {
     private ByteArrayOutputStream mErrBuffer = new ByteArrayOutputStream();
     private InputReaderThread mInputReaderThread;
     private InputReaderThread mErrReaderThread;
+    private StringBuffer input_buffer;
 
     public VirtualTerminal(String shell) throws IOException, InterruptedException {
 
@@ -55,6 +56,11 @@ public class VirtualTerminal {
                     byte[] inpbyte = mInputBuffer.toByteArray();
                     String inp = new String(inpbyte);
                     Log.i(TAG,"inp : "+inp);
+                    if(input_buffer==null){
+                        input_buffer = new StringBuffer();
+                    }
+                    input_buffer.append(inp);
+
                     doWait = !inp.contains(":RET=");
                 }
                 if (doWait) {
@@ -135,6 +141,10 @@ public class VirtualTerminal {
                 }
             }
         }
+    }
+
+    public String getInputString (){
+        return this.input_buffer.toString();
     }
 
     /**
