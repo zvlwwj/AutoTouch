@@ -12,6 +12,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -19,6 +21,8 @@ public class MainActivity extends AppCompatActivity {
     private Button start,stop;
     private Button btn1;
     private VirtualTerminal vt;
+    private ArrayList<String> cmdstr;
+    private OutputStream localOutputStream;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +44,17 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.action_add:
-                Toast.makeText(this,"开始录制脚本",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"开始run脚本",Toast.LENGTH_SHORT).show();
+
+                try {
+                    for(int i =0;i<cmdstr.size();i++){
+                        String str = "sendevent "+cmdstr.get(i);
+                        Log.i(TAG,"str : "+str);
+                        localOutputStream.write(str.getBytes());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -48,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initData() {
         try {
+            localOutputStream = Runtime.getRuntime().exec("su").getOutputStream();
             vt = new VirtualTerminal("su");
         } catch (IOException e) {
             e.printStackTrace();
@@ -83,7 +98,17 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 vt.shutdown();
                 Toast.makeText(getApplicationContext(),"stop onclick",Toast.LENGTH_SHORT).show();
-                Log.i(TAG,"input_buffer ; "+vt.getInputString());
+                String last_input=vt.getLastInputString();
+                String[] last_inputs = last_input.split("\n");
+                for(int i=0;i<last_inputs.length;i++){
+                    if(cmdstr == null){
+                        cmdstr = new ArrayList<String>();
+                    }
+                    if(last_inputs[i].startsWith("/dev/input/event")){
+                        cmdstr.add(last_inputs[i]);
+                        Log.i(TAG,"cmdstr : "+last_inputs[i]);
+                    }
+                }
             }
         });
     }

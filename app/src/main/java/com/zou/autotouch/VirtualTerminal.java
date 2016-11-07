@@ -24,7 +24,7 @@ public class VirtualTerminal {
     private ByteArrayOutputStream mErrBuffer = new ByteArrayOutputStream();
     private InputReaderThread mInputReaderThread;
     private InputReaderThread mErrReaderThread;
-    private StringBuffer input_buffer;
+    private String lastinp;
 
     public VirtualTerminal(String shell) throws IOException, InterruptedException {
 
@@ -55,12 +55,7 @@ public class VirtualTerminal {
                 synchronized (mWriteLock) {
                     byte[] inpbyte = mInputBuffer.toByteArray();
                     String inp = new String(inpbyte);
-                    Log.i(TAG,"inp : "+inp);
-                    if(input_buffer==null){
-                        input_buffer = new StringBuffer();
-                    }
-                    input_buffer.append(inp);
-
+                    lastinp = inp;
                     doWait = !inp.contains(":RET=");
                 }
                 if (doWait) {
@@ -77,14 +72,14 @@ public class VirtualTerminal {
                 //Please keep log statement or else it will dead loop
                 if (inp.contains(":RET=")) {
                     if (inp.contains(":RET=EOF") || err.contains(":RET=EOF")) {
-                        Log.w(TAG, "exec:[eof]" + inp);
+//                        Log.w(TAG, "exec:[eof]" + inp);
                     }
 
                     if (inp.contains(":RET=0")) {
-                        Log.w(TAG, "exec:[ok]" + inp);
+//                        Log.w(TAG, "exec:[ok]" + inp);
                         return new VTCommandResult(0, inp, err);
                     } else {
-                        Log.w(TAG, "exec:[err]" + inp);
+//                        Log.w(TAG, "exec:[err]" + inp);
                         return new VTCommandResult(1, inp, err);
                     }
                 }
@@ -143,8 +138,8 @@ public class VirtualTerminal {
         }
     }
 
-    public String getInputString (){
-        return this.input_buffer.toString();
+    public String getLastInputString(){
+        return this.lastinp;
     }
 
     /**
