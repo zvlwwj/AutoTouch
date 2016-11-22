@@ -55,6 +55,7 @@ public class VirtualTerminal {
                 synchronized (mWriteLock) {
                     byte[] inpbyte = mInputBuffer.toByteArray();
                     String inp = new String(inpbyte);
+                    Log.i(TAG,"inp : "+inp);
                     lastinp = inp;
                     doWait = !inp.contains(":RET=");
                 }

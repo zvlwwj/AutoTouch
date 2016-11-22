@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btn1;
     private VirtualTerminal vt;
     private ArrayList<String> cmdstr;
-    private OutputStream localOutputStream;
+    private DataOutputStream localOutputStream;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,12 +46,13 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case R.id.action_add:
                 Toast.makeText(this,"开始run脚本",Toast.LENGTH_SHORT).show();
-
                 try {
                     for(int i =0;i<cmdstr.size();i++){
                         String str = "sendevent "+cmdstr.get(i);
                         Log.i(TAG,"str : "+str);
-                        localOutputStream.write(str.getBytes());
+                        vt.runCommand(str);
+//                        localOutputStream.writeBytes(str+ "\necho :RET=$?\n");
+//                        localOutputStream.flush();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -62,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initData() {
         try {
-            localOutputStream = Runtime.getRuntime().exec("su").getOutputStream();
+            localOutputStream = new DataOutputStream(Runtime.getRuntime().exec("su").getOutputStream());
             vt = new VirtualTerminal("su");
         } catch (IOException e) {
             e.printStackTrace();
@@ -89,6 +91,35 @@ public class MainActivity extends AppCompatActivity {
         btn1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                /dev/input/event0: 0003 0039 00000d03
+//                        /dev/input/event0: 0001 014a 00000001
+//                        /dev/input/event0: 0001 0145 00000001
+//                        /dev/input/event0: 0003 0035 0000022c
+//                        /dev/input/event0: 0003 0036 000001a3
+//                        /dev/input/event0: 0003 0030 00000007
+//                        /dev/input/event0: 0003 0031 00000006
+//                        /dev/input/event0: 0000 0000 00000000
+//                        /dev/input/event0: 0003 0039 ffffffff
+//                        /dev/input/event0: 0001 014a 00000000
+//                        /dev/input/event0: 0001 0145 00000000
+//                        /dev/input/event0: 0000 0000 00000000
+//                try {
+//                    vt.runCommand("sendevent /dev/input/event0 3 57 3331");
+//                    vt.runCommand("sendevent /dev/input/event0 1 330 1");
+//                    vt.runCommand("sendevent /dev/input/event0 1 325 1");
+//                    vt.runCommand("sendevent /dev/input/event0 3 53 556");
+//                    vt.runCommand("sendevent /dev/input/event0 3 54 419");
+//                    vt.runCommand("sendevent /dev/input/event0 3 48 7");
+//                    vt.runCommand("sendevent /dev/input/event0 3 49 6");
+//                    vt.runCommand("sendevent /dev/input/event0 0 0 0");
+//                    vt.runCommand("sendevent /dev/input/event0 3 57 -1");
+//                    vt.runCommand("sendevent /dev/input/event0 1 330 0");
+//                    vt.runCommand("sendevent /dev/input/event0 1 325 0");
+//                    vt.runCommand("sendevent /dev/input/event0 0 0 0");
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+
                 Toast.makeText(getApplicationContext(),"btn1 onclick",Toast.LENGTH_SHORT).show();
             }
         });
