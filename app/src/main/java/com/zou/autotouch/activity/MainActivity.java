@@ -1,16 +1,23 @@
-package com.zou.autotouch;
+package com.zou.autotouch.activity;
 
 import android.app.Activity;
 import android.os.ParcelFileDescriptor;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.zou.autotouch.R;
+import com.zou.autotouch.fragment.GestureGroupFragment;
+import com.zou.autotouch.fragment.GestureRecordedFragment;
+
 import java.io.File;
 
 import java.io.FileNotFoundException;
@@ -22,17 +29,17 @@ import java.util.ArrayList;
 
 import jackpal.androidterm.TermExec;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
-    private ListView lv_main;
     private Button start,stop;
     private Button btn1;
     private ParcelFileDescriptor mTermFd;
+    private BottomNavigationView bottomNavigationView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initData();
+//        initData();
         initView();
         setListener();
     }
@@ -164,12 +171,29 @@ public class MainActivity extends Activity {
     }
 
     private void initView(){
-        lv_main = (ListView) findViewById(R.id.lv_main);
         start = (Button) findViewById(R.id.btn_start);
         stop = (Button) findViewById(R.id.btn_stop);
         btn1 = (Button) findViewById(R.id.btn1);
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
     }
     private void setListener(){
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Fragment fragment = null;
+                switch (item.getItemId()){
+                    case R.id.item_gesture_recorded:
+                        fragment = GestureRecordedFragment.newInstance();
+                        break;
+                    case R.id.item_gesture_group:
+                        fragment = GestureGroupFragment.newInstance();
+                        break;
+                }
+                getSupportFragmentManager().beginTransaction().replace(R.id.fl_content,fragment).setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out).commitAllowingStateLoss();;
+
+                return true;
+            }
+        });
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
