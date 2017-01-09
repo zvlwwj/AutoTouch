@@ -161,54 +161,85 @@ public class RecordSession {
     }
 
     public void stopRecord(){
-        try {
+//        try {
             stop = true;
-            mTermFd.close();
-            in.close();
-            out.close();
+//            mTermFd.close();
+//            in.close();
+//            out.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+    }
+
+    public void play(){
+//        String[] inputs = stringBuffer.toString().split("\n");
+//        for(int i=0;i<inputs.length;i++){
+//            if(cmdstrs == null){
+//                cmdstrs = new ArrayList<String>();
+//            }
+//            if(inputs[i].startsWith("/dev/input/event")){
+//                String cmdstr = format(inputs[i]);
+//                cmdstrs.add(cmdstr);
+//                Log.i(TAG,"cmdstr : "+cmdstr);
+//            }
+//        }
+//        for(int i=0;i<cmdstrs.size();i++){
+//            String cmd = cmdstrs.get(i);
+//            try {
+//                out.write((cmd+"\n").getBytes());
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+        try {
+            out.write("sendevent /dev/input/event0 3 57 3331\n".getBytes());
+            out.flush();
+            out.write("sendevent /dev/input/event0 1 330 1\n".getBytes());
+            out.flush();
+            out.write("sendevent /dev/input/event0 1 325 1\n".getBytes());
+            out.flush();
+            out.write("sendevent /dev/input/event0 3 53 556\n".getBytes());
+            out.flush();
+            out.write("sendevent /dev/input/event0 3 54 419\n".getBytes());
+            out.flush();
+            out.write("sendevent /dev/input/event0 3 48 7\n".getBytes());
+            out.flush();
+            out.write("sendevent /dev/input/event0 3 49 6\n".getBytes());
+            out.flush();
+            out.write("sendevent /dev/input/event0 0 0 0\n".getBytes());
+            out.flush();
+            out.write("sendevent /dev/input/event0 3 57 -1\n".getBytes());
+            out.flush();
+            out.write("sendevent /dev/input/event0 1 330 0\n".getBytes());
+            out.flush();
+            out.write("sendevent /dev/input/event0 1 325 0\n".getBytes());
+            out.flush();
+            out.write("sendevent /dev/input/event0 0 0 0\n".getBytes());
+            out.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void play(){
-        String[] inputs = stringBuffer.toString().split("\n");
-        for(int i=0;i<inputs.length;i++){
-            if(cmdstrs == null){
-                cmdstrs = new ArrayList<String>();
-            }
-            if(inputs[i].startsWith("/dev/input/event")){
-                String cmdstr = format(inputs[i]);
-                cmdstrs.add(cmdstr);
-                Log.i(TAG,"cmdstr : "+cmdstr);
-            }
-        }
-        for(int i=0;i<cmdstrs.size();i++){
-            String cmd = cmdstrs.get(i);
-            try {
-                out.write((cmd+"").getBytes());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     private String format(String cmdstr){
+        boolean addsuffix = false;
         StringBuffer newstr=new StringBuffer();
-        cmdstr.replace(":","");
+        cmdstr = cmdstr.replace(":","");
         String[] strs_16 =  cmdstr.split(" ");
         for(int i=1;i<strs_16.length;i++){
+            if(strs_16[i].endsWith("\r")){
+                strs_16[i] = strs_16[i].replace("\r","");
+                addsuffix = true;
+            }
             if("ffffffff".equals(strs_16[i])){
                 strs_16[i]="-1";
             }else {
-                strs_16[i] = strs_16[i].replaceFirst("^0*","");
-                if(i==3){
-                    strs_16[i] = strs_16[i].replace("\r","");
-                    Log.i(TAG,"strs_16[i] : "+strs_16[i]);
-                    strs_16[i]= Integer.parseInt(strs_16[i], 16) + "\r";
-                }else {
-                    strs_16[i] = Integer.parseInt(strs_16[i], 16) +"";
-                }
+//                strs_16[i] = strs_16[i].replaceFirst("^0*","");
+                strs_16[i] = Integer.parseInt(strs_16[i], 16) +"";
+            }
+            if(addsuffix){
+                strs_16[i]+="\r";
+                addsuffix = false;
             }
         }
         newstr.append("sendevent");
