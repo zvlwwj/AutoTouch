@@ -5,24 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.IBinder;
-import android.os.ParcelFileDescriptor;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.WindowManager;
 
 import com.zou.autotouch.application.ATApplication;
 import com.zou.autotouch.utils.UIUtils;
 import com.zou.autotouch.view.FloatBall;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-
-import jackpal.androidterm.TermExec;
-
 
 /**
  * Created by zou on 2016/10/9.
@@ -74,12 +62,17 @@ public class FloatViewService extends Service {
         floatBall.setTouchFunctionEvent(new FloatBall.TouchFunctionEvent() {
             @Override
             public void startRecord() {
-//                session.startRecord();
+                session.startRecord();
             }
 
             @Override
             public void stopRecord() {
+                session.stopRecord();
+            }
 
+            @Override
+            public void play() {
+                session.play();
             }
         });
     }

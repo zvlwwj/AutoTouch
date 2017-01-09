@@ -1,19 +1,13 @@
 package com.zou.autotouch.activity;
-
-import android.app.Activity;
 import android.content.Intent;
-import android.os.ParcelFileDescriptor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.Toast;
+
 
 import com.zou.autotouch.R;
 import com.zou.autotouch.fragment.GestureGroupFragment;
@@ -21,20 +15,8 @@ import com.zou.autotouch.fragment.GestureRecordedFragment;
 import com.zou.autotouch.fragment.SettingFragment;
 import com.zou.autotouch.service.FloatViewService;
 
-import java.io.File;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-
-
-import jackpal.androidterm.TermExec;
-
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
-    private ParcelFileDescriptor mTermFd;
     private BottomNavigationView bottomNavigationView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

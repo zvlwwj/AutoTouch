@@ -148,6 +148,9 @@ public class FloatBall extends CardView implements GestureDetector.OnGestureList
         currentStatus = STATUS_HIDE_LIST;
         invalidate();
         Toast.makeText(context,"长按",Toast.LENGTH_SHORT).show();
+        if(touchFunctionEvent!=null){
+            touchFunctionEvent.play();
+        }
     }
 
     @Override
@@ -162,5 +165,6 @@ public class FloatBall extends CardView implements GestureDetector.OnGestureList
     public interface TouchFunctionEvent{
         void startRecord();
         void stopRecord();
+        void play();
     }
 }

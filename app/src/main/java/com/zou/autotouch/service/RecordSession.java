@@ -19,11 +19,17 @@ import jackpal.androidterm.TermExec;
 public class RecordSession {
     private static final String TAG = "RecordSession";
     private ParcelFileDescriptor mTermFd;
+    private InputStream in;
+    private OutputStream out;
+    private boolean stop;
+    private StringBuffer stringBuffer;
+    private ArrayList<String> cmdstrs;
     public void startRecord(){
         try {
+            stop =false;
             mTermFd = ParcelFileDescriptor.open(new File("/dev/ptmx"), ParcelFileDescriptor.MODE_READ_WRITE);
-            final InputStream in = new ParcelFileDescriptor.AutoCloseInputStream(mTermFd);
-            OutputStream out = new ParcelFileDescriptor.AutoCloseOutputStream(mTermFd);
+            in = new ParcelFileDescriptor.AutoCloseInputStream(mTermFd);
+            out = new ParcelFileDescriptor.AutoCloseOutputStream(mTermFd);
             initializeSession();
             new Thread(){
                 @Override
@@ -31,9 +37,17 @@ public class RecordSession {
                     byte[] buffer = new byte[4096];
                     while (true){
                         try {
-                            int read = in.read(buffer);
-                            String str = new String(buffer,0,read);
-                            Log.i(TAG,"read: "+str);
+                            if(!stop) {
+                                int read = in.read(buffer);
+                                String str = new String(buffer, 0, read);
+                                if(stringBuffer == null){
+                                    stringBuffer = new StringBuffer();
+                                }
+                                stringBuffer.append(str);
+                                Log.i(TAG, "read: " + str);
+                            }else{
+                                break;
+                            }
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -147,6 +161,60 @@ public class RecordSession {
     }
 
     public void stopRecord(){
+        try {
+            stop = true;
+            mTermFd.close();
+            in.close();
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
+    public void play(){
+        String[] inputs = stringBuffer.toString().split("\n");
+        for(int i=0;i<inputs.length;i++){
+            if(cmdstrs == null){
+                cmdstrs = new ArrayList<String>();
+            }
+            if(inputs[i].startsWith("/dev/input/event")){
+                String cmdstr = format(inputs[i]);
+                cmdstrs.add(cmdstr);
+                Log.i(TAG,"cmdstr : "+cmdstr);
+            }
+        }
+        for(int i=0;i<cmdstrs.size();i++){
+            String cmd = cmdstrs.get(i);
+            try {
+                out.write((cmd+"").getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private String format(String cmdstr){
+        StringBuffer newstr=new StringBuffer();
+        cmdstr.replace(":","");
+        String[] strs_16 =  cmdstr.split(" ");
+        for(int i=1;i<strs_16.length;i++){
+            if("ffffffff".equals(strs_16[i])){
+                strs_16[i]="-1";
+            }else {
+                strs_16[i] = strs_16[i].replaceFirst("^0*","");
+                if(i==3){
+                    strs_16[i] = strs_16[i].replace("\r","");
+                    Log.i(TAG,"strs_16[i] : "+strs_16[i]);
+                    strs_16[i]= Integer.parseInt(strs_16[i], 16) + "\r";
+                }else {
+                    strs_16[i] = Integer.parseInt(strs_16[i], 16) +"";
+                }
+            }
+        }
+        newstr.append("sendevent");
+        for(int i=0;i<strs_16.length;i++){
+            newstr = newstr.append(" "+strs_16[i]);
+        }
+        return newstr.toString();
     }
 }
