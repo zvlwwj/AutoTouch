@@ -14,24 +14,6 @@
     android:layout_height="match_parent"
     android:id="@+id/fl_content"
     />
-    <Button android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="start"
-        android:id="@+id/btn_start"/>
-
-    <Button android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="button1"
-        android:id="@+id/btn1"
-        android:layout_toRightOf="@id/btn_start"/>
-
-    <Button android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="stop"
-        android:id="@+id/btn_stop"
-        android:layout_toRightOf="@+id/btn1"/>
-
-
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/bottom_navigation"
         app:menu="@menu/tab_menu"

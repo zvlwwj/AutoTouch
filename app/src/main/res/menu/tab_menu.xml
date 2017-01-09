@@ -2,8 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/item_gesture_recorded"
-        android:title="@string/recorded_gesture" />
+        android:title="@string/recorded_gesture"
+        android:icon="@drawable/ic_touch_app_black_24dp"/>
     <item
         android:id="@+id/item_gesture_group"
-        android:title="@string/group_gesture" />
+        android:title="@string/group_gesture"
+        android:icon="@drawable/ic_transform_black_24dp"/>
+    <item
+        android:id="@+id/item_setting"
+        android:icon="@drawable/ic_settings_black_24dp"
+        android:title="@string/setting" />
 </menu>

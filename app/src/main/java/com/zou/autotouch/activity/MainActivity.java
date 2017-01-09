@@ -1,6 +1,7 @@
 package com.zou.autotouch.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.ParcelFileDescriptor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,6 +18,8 @@ import android.widget.Toast;
 import com.zou.autotouch.R;
 import com.zou.autotouch.fragment.GestureGroupFragment;
 import com.zou.autotouch.fragment.GestureRecordedFragment;
+import com.zou.autotouch.fragment.SettingFragment;
+import com.zou.autotouch.service.FloatViewService;
 
 import java.io.File;
 
@@ -31,8 +34,6 @@ import jackpal.androidterm.TermExec;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
-    private Button start,stop;
-    private Button btn1;
     private ParcelFileDescriptor mTermFd;
     private BottomNavigationView bottomNavigationView;
     @Override
@@ -42,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
 //        initData();
         initView();
         setListener();
+        Intent intent = new Intent(MainActivity.this, FloatViewService.class);
+        startService(intent);
     }
 
     private void initData() {
@@ -171,10 +174,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView(){
-        start = (Button) findViewById(R.id.btn_start);
-        stop = (Button) findViewById(R.id.btn_stop);
-        btn1 = (Button) findViewById(R.id.btn1);
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        Fragment fragment = GestureRecordedFragment.newInstance();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fl_content,fragment).setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out).commitAllowingStateLoss();
     }
     private void setListener(){
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -188,23 +190,25 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.item_gesture_group:
                         fragment = GestureGroupFragment.newInstance();
                         break;
+                    case R.id.item_setting:
+                        fragment = SettingFragment.newInstance();
                 }
-                getSupportFragmentManager().beginTransaction().replace(R.id.fl_content,fragment).setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out).commitAllowingStateLoss();;
+                getSupportFragmentManager().beginTransaction().replace(R.id.fl_content,fragment).setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out).commitAllowingStateLoss();
 
                 return true;
             }
         });
-        start.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(),"start onclick",Toast.LENGTH_SHORT).show();
-                recordEvent();
-            }
-        });
+//        start.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Toast.makeText(getApplicationContext(),"start onclick",Toast.LENGTH_SHORT).show();
+//                recordEvent();
+//            }
+//        });
 
-        btn1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+//        btn1.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
 //                /dev/input/event0: 0003 0039 00000d03
 //                        /dev/input/event0: 0001 014a 00000001
 //                        /dev/input/event0: 0001 0145 00000001
@@ -234,14 +238,14 @@ public class MainActivity extends AppCompatActivity {
 //                    e.printStackTrace();
 //                }
 
-                Toast.makeText(getApplicationContext(),"btn1 onclick",Toast.LENGTH_SHORT).show();
-            }
-        });
+//                Toast.makeText(getApplicationContext(),"btn1 onclick",Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
-        stop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(),"stop onclick",Toast.LENGTH_SHORT).show();
+//        stop.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Toast.makeText(getApplicationContext(),"stop onclick",Toast.LENGTH_SHORT).show();
 //                String last_input=vt.getLastInputString();
 //                String[] last_inputs = last_input.split("\n");
 //                for(int i=0;i<last_inputs.length;i++){
@@ -254,8 +258,8 @@ public class MainActivity extends AppCompatActivity {
 //                        Log.i(TAG,"cmdstr : "+cmdstr);
 //                    }
 //                }
-            }
-        });
+//            }
+//        });
     }
 
     private String format(String cmdstr){

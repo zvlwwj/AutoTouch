@@ -2,4 +2,5 @@
     <string name="app_name">AutoTouch</string>
     <string name="recorded_gesture">已录制手势</string>
     <string name="group_gesture">组合手势</string>
+    <string name="setting">设置</string>
 </resources>
