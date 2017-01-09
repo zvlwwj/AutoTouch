@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.IBinder;
+import android.os.ParcelFileDescriptor;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.WindowManager;
 
@@ -12,17 +14,28 @@ import com.zou.autotouch.application.ATApplication;
 import com.zou.autotouch.utils.UIUtils;
 import com.zou.autotouch.view.FloatBall;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+
+import jackpal.androidterm.TermExec;
+
 
 /**
  * Created by zou on 2016/10/9.
  */
 
 public class FloatViewService extends Service {
+    private static final String TAG = "FloatViewService";
     private WindowManager mWindowManager;
     private WindowManager.LayoutParams params;
     private FloatBall floatBall;
     private static final int MARGING_LEFT=15;
     private static final int MARGING_TOP=15;
+    private RecordSession session;
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -31,8 +44,11 @@ public class FloatViewService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        session = new RecordSession();
         showView();
+        setListener();
     }
+
     private void showView(){
         //获取WindowManager
         mWindowManager=(WindowManager)getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
@@ -54,10 +70,26 @@ public class FloatViewService extends Service {
         mWindowManager.addView(floatBall, params);
     }
 
+    private void setListener() {
+        floatBall.setTouchFunctionEvent(new FloatBall.TouchFunctionEvent() {
+            @Override
+            public void startRecord() {
+//                session.startRecord();
+            }
+
+            @Override
+            public void stopRecord() {
+
+            }
+        });
+    }
+
     @Override
     public void onDestroy(){
         super.onDestroy();
         //在程序退出(Activity销毁）时销毁悬浮窗口
         mWindowManager.removeView(floatBall);
     }
+
+
 }
