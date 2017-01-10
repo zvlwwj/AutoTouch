@@ -115,22 +115,4 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
     }
-
-    private String format(String cmdstr){
-        StringBuffer newstr=new StringBuffer();
-        cmdstr.replace(":","");
-        String[] strs_16 =  cmdstr.split(" ");
-        for(int i=1;i<strs_16.length;i++){
-            if("ffffffff".equals(strs_16[i])){
-                strs_16[i]="-1";
-            }else {
-                strs_16[i] = Integer.parseInt(strs_16[i], 16) + "";
-            }
-        }
-        newstr.append("sendevent");
-        for(int i=0;i<strs_16.length;i++){
-            newstr = newstr.append(" "+strs_16[i]);
-        }
-        return newstr.toString();
-    }
 }

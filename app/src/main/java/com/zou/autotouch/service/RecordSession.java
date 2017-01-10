@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import jackpal.androidterm.TermExec;
 
@@ -21,16 +23,20 @@ public class RecordSession {
     private ParcelFileDescriptor mTermFd;
     private InputStream in;
     private OutputStream out;
+    private OutputStream out_play;
     private boolean stop;
     private StringBuffer stringBuffer;
     private ArrayList<String> cmdstrs;
+    public RecordSession(){
+        try {
+            initializeSession();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void startRecord(){
         try {
-            stop =false;
-            mTermFd = ParcelFileDescriptor.open(new File("/dev/ptmx"), ParcelFileDescriptor.MODE_READ_WRITE);
-            in = new ParcelFileDescriptor.AutoCloseInputStream(mTermFd);
-            out = new ParcelFileDescriptor.AutoCloseOutputStream(mTermFd);
-            initializeSession();
             new Thread(){
                 @Override
                 public void run() {
@@ -66,9 +72,15 @@ public class RecordSession {
     }
 
     private void initializeSession() throws IOException {
+        stop =false;
+        mTermFd = ParcelFileDescriptor.open(new File("/dev/ptmx"), ParcelFileDescriptor.MODE_READ_WRITE);
+        in = new ParcelFileDescriptor.AutoCloseInputStream(mTermFd);
+        out = new ParcelFileDescriptor.AutoCloseOutputStream(mTermFd);
+        Process process = Runtime.getRuntime().exec("su");
+        out_play = process.getOutputStream();
+
         String path = System.getenv("PATH");
         path = checkPath(path);
-
         String[] env = new String[3];
         env[0] = "TERM=screen";
         env[1] = "PATH=" + path;
@@ -162,7 +174,24 @@ public class RecordSession {
 
     public void stopRecord(){
 //        try {
-            stop = true;
+        stop = true;
+        String[] inputs = stringBuffer.toString().split("\n");
+
+        for(int i=0;i<inputs.length;i++){
+            if(cmdstrs == null){
+                cmdstrs = new ArrayList<String>();
+            }
+            if(inputs[i].startsWith("/dev/input/event")){
+                String cmdstr = format(inputs[i]);
+                cmdstrs.add(cmdstr);
+                Log.i(TAG,"cmdstr before: "+cmdstr);
+            }
+        }
+        removeLastClickEvent();
+//
+//        for(int i=0;i<cmdstrs.size();i++){
+//            Log.i(TAG,"cmdstr after: "+cmdstrs.get(i));
+//        }
 //            mTermFd.close();
 //            in.close();
 //            out.close();
@@ -171,53 +200,42 @@ public class RecordSession {
 //        }
     }
 
+    private void removeLastClickEvent() {
+        //最后一个click事件出现时，会有两个sendevent /dev/input/event0 3 57 3331
+        //删除从倒数第二个sendevent /dev/input/event0 3 57 3331 事件之后的所有事件
+        ArrayList<Integer> eventClickNum = null;
+        int lastClickNum = 0;
+        for(int i=0;i<cmdstrs.size();i++){
+            if(cmdstrs.get(i).contains("3 57 ")){
+                if(eventClickNum == null){
+                    eventClickNum = new ArrayList<Integer>();
+                }
+                eventClickNum.add(i);
+            }
+        }
+        if(eventClickNum!=null&&eventClickNum.size()>=2){
+            lastClickNum = eventClickNum.get(eventClickNum.size()-2);
+            Iterator<String> iterator = cmdstrs.iterator();
+            while(iterator.hasNext()){
+                int i = 0;
+                i++;
+                if(i>=lastClickNum){
+                    cmdstrs.remove(i);
+                    i--;
+                }
+            }
+        }
+    }
+
     public void play(){
-//        String[] inputs = stringBuffer.toString().split("\n");
-//        for(int i=0;i<inputs.length;i++){
-//            if(cmdstrs == null){
-//                cmdstrs = new ArrayList<String>();
-//            }
-//            if(inputs[i].startsWith("/dev/input/event")){
-//                String cmdstr = format(inputs[i]);
-//                cmdstrs.add(cmdstr);
-//                Log.i(TAG,"cmdstr : "+cmdstr);
-//            }
-//        }
-//        for(int i=0;i<cmdstrs.size();i++){
-//            String cmd = cmdstrs.get(i);
-//            try {
-//                out.write((cmd+"\n").getBytes());
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-        try {
-            out.write("sendevent /dev/input/event0 3 57 3331\n".getBytes());
-            out.flush();
-            out.write("sendevent /dev/input/event0 1 330 1\n".getBytes());
-            out.flush();
-            out.write("sendevent /dev/input/event0 1 325 1\n".getBytes());
-            out.flush();
-            out.write("sendevent /dev/input/event0 3 53 556\n".getBytes());
-            out.flush();
-            out.write("sendevent /dev/input/event0 3 54 419\n".getBytes());
-            out.flush();
-            out.write("sendevent /dev/input/event0 3 48 7\n".getBytes());
-            out.flush();
-            out.write("sendevent /dev/input/event0 3 49 6\n".getBytes());
-            out.flush();
-            out.write("sendevent /dev/input/event0 0 0 0\n".getBytes());
-            out.flush();
-            out.write("sendevent /dev/input/event0 3 57 -1\n".getBytes());
-            out.flush();
-            out.write("sendevent /dev/input/event0 1 330 0\n".getBytes());
-            out.flush();
-            out.write("sendevent /dev/input/event0 1 325 0\n".getBytes());
-            out.flush();
-            out.write("sendevent /dev/input/event0 0 0 0\n".getBytes());
-            out.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
+        for(int i=0;i<cmdstrs.size();i++){
+            String cmd = cmdstrs.get(i);
+            try {
+                out_play.write((cmd+"\n").getBytes());
+                out_play.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
