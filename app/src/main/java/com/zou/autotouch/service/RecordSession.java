@@ -23,7 +23,7 @@ public class RecordSession {
     private ParcelFileDescriptor mTermFd;
     private InputStream in;
     private OutputStream out;
-    private OutputStream out_play;
+//    private OutputStream out_play;
     private boolean stop;
     private StringBuffer stringBuffer;
     private ArrayList<String> cmdstrs;
@@ -60,8 +60,6 @@ public class RecordSession {
                     }
                 }
             }.start();
-            out.write("su\n".getBytes());
-            out.flush();
             out.write("getevent\n".getBytes());
             out.flush();
         } catch (FileNotFoundException e) {
@@ -76,8 +74,10 @@ public class RecordSession {
         mTermFd = ParcelFileDescriptor.open(new File("/dev/ptmx"), ParcelFileDescriptor.MODE_READ_WRITE);
         in = new ParcelFileDescriptor.AutoCloseInputStream(mTermFd);
         out = new ParcelFileDescriptor.AutoCloseOutputStream(mTermFd);
-        Process process = Runtime.getRuntime().exec("su");
-        out_play = process.getOutputStream();
+        out.write("su\n".getBytes());
+        out.flush();
+//        Process process = Runtime.getRuntime().exec("su");
+//        out_play = process.getOutputStream();
 
         String path = System.getenv("PATH");
         path = checkPath(path);
@@ -173,8 +173,11 @@ public class RecordSession {
     }
 
     public void stopRecord(){
-//        try {
-        stop = true;
+        try {
+            stop = true;
+            mTermFd.close();
+            in.close();
+            out.close();
         String[] inputs = stringBuffer.toString().split("\n");
 
         for(int i=0;i<inputs.length;i++){
@@ -188,12 +191,10 @@ public class RecordSession {
             }
         }
         removeLastClickEvent();
-//            mTermFd.close();
-//            in.close();
-//            out.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void removeLastClickEvent() {
@@ -218,42 +219,39 @@ public class RecordSession {
     }
 
     public void play(){
+        StringBuffer buffer = null;
         for(int i=0;i<cmdstrs.size();i++){
-            Log.i(TAG,"cmdstr after: "+cmdstrs.get(i));
-            String cmd = cmdstrs.get(i);
-            try {
-                out_play.write((cmd+"\n").getBytes());
-
-            } catch (IOException e) {
-                e.printStackTrace();
+                String cmd = cmdstrs.get(i);
+                Log.i(TAG, "cmdstr after: " + cmd);
+            if(buffer == null){
+                buffer = new StringBuffer();
             }
+            buffer.append(cmd).append("\n");
         }
         try {
-            out_play.flush();
+            initializeSession();
+            Thread.sleep(1000);
+            out.write((buffer.toString()).getBytes());
+            out.flush();
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
     private String format(String cmdstr){
-        boolean addsuffix = false;
         StringBuffer newstr=new StringBuffer();
         cmdstr = cmdstr.replace(":","");
         String[] strs_16 =  cmdstr.split(" ");
         for(int i=1;i<strs_16.length;i++){
             if(strs_16[i].endsWith("\r")){
                 strs_16[i] = strs_16[i].replace("\r","");
-                addsuffix = true;
             }
             if("ffffffff".equals(strs_16[i])){
                 strs_16[i]="-1";
             }else {
-//                strs_16[i] = strs_16[i].replaceFirst("^0*","");
                 strs_16[i] = Integer.parseInt(strs_16[i], 16) +"";
-            }
-            if(addsuffix){
-                strs_16[i]+="\r";
-                addsuffix = false;
             }
         }
         newstr.append("sendevent");
@@ -265,19 +263,31 @@ public class RecordSession {
 
     public void test() {
         try {
-            out_play.write("sendevent /dev/input/event0 3 57 8755\n".getBytes());
-            out_play.write("sendevent /dev/input/event0 1 330 1\n".getBytes());
-            out_play.write("sendevent /dev/input/event0 1 325 1\n".getBytes());
-            out_play.write("sendevent /dev/input/event0 3 53 1209\n".getBytes());
-            out_play.write("sendevent /dev/input/event0 3 54 166\n".getBytes());
-            out_play.write("sendevent /dev/input/event0 0 0 0\n".getBytes());
-            out_play.write("sendevent /dev/input/event0 3 49 5\n".getBytes());
-            out_play.write("sendevent /dev/input/event0 0 0 0\n".getBytes());
-            out_play.write("sendevent /dev/input/event0 3 57 -1\n".getBytes());
-            out_play.write("sendevent /dev/input/event0 1 330 0\n".getBytes());
-            out_play.write("sendevent /dev/input/event0 1 325 0\n".getBytes());
-            out_play.write("sendevent /dev/input/event0 0 0 0\n".getBytes());
-            out_play.flush();
+            initializeSession();
+            out.write("sendevent /dev/input/event0 3 57 8755\n".getBytes());
+            out.flush();
+            out.write("sendevent /dev/input/event0 1 330 1\n".getBytes());
+            out.flush();
+            out.write("sendevent /dev/input/event0 1 325 1\n".getBytes());
+            out.flush();
+            out.write("sendevent /dev/input/event0 3 53 1209\n".getBytes());
+            out.flush();
+            out.write("sendevent /dev/input/event0 3 54 166\n".getBytes());
+            out.flush();
+            out.write("sendevent /dev/input/event0 0 0 0\n".getBytes());
+            out.flush();
+            out.write("sendevent /dev/input/event0 3 49 5\n".getBytes());
+            out.flush();
+            out.write("sendevent /dev/input/event0 0 0 0\n".getBytes());
+            out.flush();
+            out.write("sendevent /dev/input/event0 3 57 -1\n".getBytes());
+            out.flush();
+            out.write("sendevent /dev/input/event0 1 330 0\n".getBytes());
+            out.flush();
+            out.write("sendevent /dev/input/event0 1 325 0\n".getBytes());
+            out.flush();
+            out.write("sendevent /dev/input/event0 0 0 0\n".getBytes());
+            out.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
