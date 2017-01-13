@@ -190,10 +190,33 @@ public class RecordSession {
                 Log.i(TAG,"cmdstr before: "+cmdstr);
             }
         }
-        removeLastClickEvent();
-
+        removeLastClickEvent();//去除最后一个单机事件
+        fixSendEvent();
+            for (String str: cmdstrs) {
+                Log.i(TAG,"cmdstr after: "+str);
+            }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void fixSendEvent() {
+        ArrayList<String> eventx = new ArrayList<String>();
+        ArrayList<String> eventy = new ArrayList<String>();
+        for(int i=0;i<cmdstrs.size();i++){
+            String str = cmdstrs.get(i);
+            if(str.contains(" 3 53 ")){
+                eventx.add(str);
+                if(!cmdstrs.get(i+1).contains(" 3 54 ")){
+                    cmdstrs.add(i+1,eventy.get(eventy.size()-1));
+                }
+            }
+            if(str.contains(" 3 54 ")){
+                eventy.add(str);
+                if(!cmdstrs.get(i-1).contains(" 3 53 ")){
+                    cmdstrs.add(i,eventx.get(eventx.size()-1));
+                }
+            }
         }
     }
 
@@ -222,18 +245,18 @@ public class RecordSession {
         StringBuffer buffer = null;
         try {
             initializeSession();
-
+            Thread.sleep(1000);
         for(int i=0;i<cmdstrs.size();i++){
                 String cmd = cmdstrs.get(i);
-                Log.i(TAG, "cmdstr after: " + cmd);
+//                Log.i(TAG, "cmdstr after: " + cmd);
             out.write((cmd+"\n").getBytes());
-            out.flush();
-            Thread.sleep(10);
+//            out.flush();
 //            if(buffer == null){
 //                buffer = new StringBuffer();
 //            }
 //            buffer.append(cmd).append("\n");
         }
+            out.flush();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -264,35 +287,35 @@ public class RecordSession {
     }
 
     public void test() {
-        try {
-            initializeSession();
-            out.write("sendevent /dev/input/event0 3 57 8755\n".getBytes());
-            out.flush();
-            out.write("sendevent /dev/input/event0 1 330 1\n".getBytes());
-            out.flush();
-            out.write("sendevent /dev/input/event0 1 325 1\n".getBytes());
-            out.flush();
-            out.write("sendevent /dev/input/event0 3 53 1209\n".getBytes());
-            out.flush();
-            out.write("sendevent /dev/input/event0 3 54 166\n".getBytes());
-            out.flush();
-            out.write("sendevent /dev/input/event0 0 0 0\n".getBytes());
-            out.flush();
-            out.write("sendevent /dev/input/event0 3 49 5\n".getBytes());
-            out.flush();
-            out.write("sendevent /dev/input/event0 0 0 0\n".getBytes());
-            out.flush();
-            out.write("sendevent /dev/input/event0 3 57 -1\n".getBytes());
-            out.flush();
-            out.write("sendevent /dev/input/event0 1 330 0\n".getBytes());
-            out.flush();
-            out.write("sendevent /dev/input/event0 1 325 0\n".getBytes());
-            out.flush();
-            out.write("sendevent /dev/input/event0 0 0 0\n".getBytes());
-            out.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            initializeSession();
+//            out.write("sendevent /dev/input/event0 3 57 8755\n".getBytes());
+//            out.flush();
+//            out.write("sendevent /dev/input/event0 1 330 1\n".getBytes());
+//            out.flush();
+//            out.write("sendevent /dev/input/event0 1 325 1\n".getBytes());
+//            out.flush();
+//            out.write("sendevent /dev/input/event0 3 53 1209\n".getBytes());
+//            out.flush();
+//            out.write("sendevent /dev/input/event0 3 54 166\n".getBytes());
+//            out.flush();
+//            out.write("sendevent /dev/input/event0 0 0 0\n".getBytes());
+//            out.flush();
+//            out.write("sendevent /dev/input/event0 3 49 5\n".getBytes());
+//            out.flush();
+//            out.write("sendevent /dev/input/event0 0 0 0\n".getBytes());
+//            out.flush();
+//            out.write("sendevent /dev/input/event0 3 57 -1\n".getBytes());
+//            out.flush();
+//            out.write("sendevent /dev/input/event0 1 330 0\n".getBytes());
+//            out.flush();
+//            out.write("sendevent /dev/input/event0 1 325 0\n".getBytes());
+//            out.flush();
+//            out.write("sendevent /dev/input/event0 0 0 0\n".getBytes());
+//            out.flush();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 }
 //sendevent /dev/input/event0 3 57 4891
