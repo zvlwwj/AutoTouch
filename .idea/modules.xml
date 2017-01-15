@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AutoTouch.iml" filepath="$PROJECT_DIR$/AutoTouch.iml" />
+      <module fileurl="file://$PROJECT_DIR$/RootShell/RootShell.iml" filepath="$PROJECT_DIR$/RootShell/RootShell.iml" />
+      <module fileurl="file://$PROJECT_DIR$/RootTools-master/RootTools-master.iml" filepath="$PROJECT_DIR$/RootTools-master/RootTools-master.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/libtermexec/libtermexe.iml" filepath="$PROJECT_DIR$/libtermexec/libtermexe.iml" />
     </modules>

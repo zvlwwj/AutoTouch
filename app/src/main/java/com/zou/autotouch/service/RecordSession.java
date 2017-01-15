@@ -3,14 +3,18 @@ package com.zou.autotouch.service;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
+
+import com.stericson.RootShell.exceptions.RootDeniedException;
+import com.stericson.RootShell.execution.Command;
+import com.stericson.RootTools.RootTools;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.concurrent.TimeoutException;
 
 import jackpal.androidterm.TermExec;
 
@@ -203,6 +207,7 @@ public class RecordSession {
     private void fixSendEvent() {
         ArrayList<String> eventx = new ArrayList<String>();
         ArrayList<String> eventy = new ArrayList<String>();
+        ArrayList<String> tracking_id = new ArrayList<String>();
         for(int i=0;i<cmdstrs.size();i++){
             String str = cmdstrs.get(i);
             if(str.contains(" 3 53 ")){
@@ -215,6 +220,14 @@ public class RecordSession {
                 eventy.add(str);
                 if(!cmdstrs.get(i-1).contains(" 3 53 ")){
                     cmdstrs.add(i,eventx.get(eventx.size()-1));
+                }
+            }
+            if(str.contains(" 3 57 ")){
+                tracking_id.add(str);
+            }
+            if(str.contains(" 0 0 0")){
+                if(i<cmdstrs.size()-1&&!cmdstrs.get(i+1).contains(" 3 57 ")){
+                    cmdstrs.add(i+1,tracking_id.get(tracking_id.size()-1));
                 }
             }
         }
@@ -249,17 +262,23 @@ public class RecordSession {
         for(int i=0;i<cmdstrs.size();i++){
                 String cmd = cmdstrs.get(i);
 //                Log.i(TAG, "cmdstr after: " + cmd);
-            out.write((cmd+"\n").getBytes());
+//            out.write((cmd+"\n").getBytes());
 //            out.flush();
 //            if(buffer == null){
 //                buffer = new StringBuffer();
 //            }
 //            buffer.append(cmd).append("\n");
+            Command command = new Command(0, cmd);
+            RootTools.getShell(true).add(command);
         }
             out.flush();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (RootDeniedException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
             e.printStackTrace();
         }
 

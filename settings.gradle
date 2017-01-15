@@ -1,2 +1,2 @@
-include ':app', ':libtermexe'
+include ':app', ':libtermexe', ':RootTools-master', ':RootShell'
 project(':libtermexe').projectDir = new File('libtermexec')
