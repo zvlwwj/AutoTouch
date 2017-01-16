@@ -4,10 +4,6 @@ import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
 
-import com.stericson.RootShell.exceptions.RootDeniedException;
-import com.stericson.RootShell.execution.Command;
-import com.stericson.RootTools.RootTools;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -17,6 +13,9 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
 import jackpal.androidterm.TermExec;
+import rootshell.exceptions.RootDeniedException;
+import rootshell.execution.Command;
+import roottools.RootTools;
 
 /**
  * Created by zou on 2017/1/9.
@@ -195,7 +194,7 @@ public class RecordSession {
             }
         }
         removeLastClickEvent();//去除最后一个单机事件
-        fixSendEvent();
+//        fixSendEvent();
             for (String str: cmdstrs) {
                 Log.i(TAG,"cmdstr after: "+str);
             }
@@ -271,7 +270,6 @@ public class RecordSession {
             Command command = new Command(0, cmd);
             RootTools.getShell(true).add(command);
         }
-            out.flush();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
