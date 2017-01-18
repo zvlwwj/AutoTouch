@@ -147,9 +147,8 @@ public class FloatBall extends CardView implements GestureDetector.OnGestureList
         performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);//震动反馈
         currentStatus = STATUS_HIDE_LIST;
         invalidate();
-        Toast.makeText(context,"长按",Toast.LENGTH_SHORT).show();
         if(touchFunctionEvent!=null){
-            touchFunctionEvent.play();
+            touchFunctionEvent.showList();
         }
     }
 
@@ -166,5 +165,6 @@ public class FloatBall extends CardView implements GestureDetector.OnGestureList
         void startRecord();
         void stopRecord();
         void play();
+        void showList();
     }
 }

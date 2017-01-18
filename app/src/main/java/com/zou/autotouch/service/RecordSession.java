@@ -1,6 +1,7 @@
 package com.zou.autotouch.service;
 
 import android.os.ParcelFileDescriptor;
+import android.os.SystemClock;
 import android.util.Log;
 
 
@@ -196,7 +197,7 @@ public class RecordSession {
         removeLastClickEvent();//去除最后一个单机事件
 //        fixSendEvent();
             for (String str: cmdstrs) {
-                Log.i(TAG,"cmdstr after: "+str);
+                Log.i(TAG,"Touch event motionEvent cmdstr after: "+str);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -256,30 +257,27 @@ public class RecordSession {
     public void play(){
         StringBuffer buffer = null;
         try {
-            initializeSession();
-            Thread.sleep(1000);
+//            initializeSession();
+//            Thread.sleep(500);
         for(int i=0;i<cmdstrs.size();i++){
                 String cmd = cmdstrs.get(i);
-//                Log.i(TAG, "cmdstr after: " + cmd);
-//            out.write((cmd+"\n").getBytes());
-//            out.flush();
-//            if(buffer == null){
-//                buffer = new StringBuffer();
-//            }
-//            buffer.append(cmd).append("\n");
-            Command command = new Command(0, cmd);
-            RootTools.getShell(true).add(command);
+//            Log.i(TAG, "cmdstr after: " + cmd);
+            if(buffer == null){
+                buffer = new StringBuffer();
+            }
+            buffer.append(cmd).append("\n");
         }
+            Command command = new Command(0, buffer.toString());
+            RootTools.getShell(true).add(command);
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (InterruptedException e) {
+        } /*catch (InterruptedException e) {
             e.printStackTrace();
-        } catch (RootDeniedException e) {
+        }*/ catch (RootDeniedException e) {
             e.printStackTrace();
         } catch (TimeoutException e) {
             e.printStackTrace();
         }
-
     }
 
     private String format(String cmdstr){
@@ -335,364 +333,3 @@ public class RecordSession {
 //        }
     }
 }
-//sendevent /dev/input/event0 3 57 4891
-//        sendevent /dev/input/event0 1 330 1
-//        sendevent /dev/input/event0 1 325 1
-//        sendevent /dev/input/event0 3 53 151
-//        sendevent /dev/input/event0 3 54 1208
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 152
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 154
-//        sendevent /dev/input/event0 3 54 1209
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 156
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 160
-//        sendevent /dev/input/event0 3 54 1210
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 164
-//        sendevent /dev/input/event0 3 54 1211
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 170
-//        sendevent /dev/input/event0 3 54 1212
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 175
-//        sendevent /dev/input/event0 3 54 1213
-//        sendevent /dev/input/event0 3 49 5
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 181
-//        sendevent /dev/input/event0 3 54 1214
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 188
-//        sendevent /dev/input/event0 3 54 1215
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 196
-//        sendevent /dev/input/event0 3 49 6
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 204
-//        sendevent /dev/input/event0 3 54 1216
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 212
-//        sendevent /dev/input/event0 3 54 1218
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 219
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 227
-//        sendevent /dev/input/event0 3 54 1220
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 235
-//        sendevent /dev/input/event0 3 54 1221
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 243
-//        sendevent /dev/input/event0 3 54 1222
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 252
-//        sendevent /dev/input/event0 3 54 1223
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 262
-//        sendevent /dev/input/event0 3 54 1224
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 274
-//        sendevent /dev/input/event0 3 54 1225
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 284
-//        sendevent /dev/input/event0 3 54 1227
-//        sendevent /dev/input/event0 3 49 5
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 298
-//        sendevent /dev/input/event0 3 54 1228
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 305
-//        sendevent /dev/input/event0 3 54 1229
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 314
-//        sendevent /dev/input/event0 3 54 1230
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 323
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 334
-//        sendevent /dev/input/event0 3 54 1232
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 345
-//        sendevent /dev/input/event0 3 54 1233
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 355
-//        sendevent /dev/input/event0 3 54 1234
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 365
-//        sendevent /dev/input/event0 3 54 1235
-//        sendevent /dev/input/event0 3 48 5
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 380
-//        sendevent /dev/input/event0 3 48 6
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 389
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 398
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 408
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 418
-//        sendevent /dev/input/event0 3 54 1236
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 432
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 446
-//        sendevent /dev/input/event0 3 54 1237
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 458
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 470
-//        sendevent /dev/input/event0 3 54 1238
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 479
-//        sendevent /dev/input/event0 3 54 1237
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 492
-//        sendevent /dev/input/event0 3 54 1238
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 503
-//        sendevent /dev/input/event0 3 54 1239
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 517
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 531
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 543
-//        sendevent /dev/input/event0 3 54 1241
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 554
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 564
-//        sendevent /dev/input/event0 3 54 1240
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 578
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 591
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 604
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 617
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 630
-//        sendevent /dev/input/event0 3 54 1241
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 640
-//        sendevent /dev/input/event0 3 54 1242
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 646
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 658
-//        sendevent /dev/input/event0 3 54 1243
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 673
-//        sendevent /dev/input/event0 3 54 1244
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 684
-//        sendevent /dev/input/event0 3 54 1245
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 699
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 709
-//        sendevent /dev/input/event0 3 54 1246
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 718
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 729
-//        sendevent /dev/input/event0 3 54 1247
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 736
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 751
-//        sendevent /dev/input/event0 3 54 1248
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 765
-//        sendevent /dev/input/event0 3 54 1249
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 780
-//        sendevent /dev/input/event0 3 49 6
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 785
-//        sendevent /dev/input/event0 3 54 1250
-//        sendevent /dev/input/event0 3 49 5
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 795
-//        sendevent /dev/input/event0 3 54 1251
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 805
-//        sendevent /dev/input/event0 3 49 6
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 817
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 824
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 840
-//        sendevent /dev/input/event0 3 49 5
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 850
-//        sendevent /dev/input/event0 3 54 1252
-//        sendevent /dev/input/event0 3 49 6
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 863
-//        sendevent /dev/input/event0 3 49 5
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 873
-//        sendevent /dev/input/event0 3 49 6
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 881
-//        sendevent /dev/input/event0 3 49 5
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 888
-//        sendevent /dev/input/event0 3 49 6
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 905
-//        sendevent /dev/input/event0 3 54 1253
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 913
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 927
-//        sendevent /dev/input/event0 3 54 1254
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 940
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 947
-//        sendevent /dev/input/event0 3 54 1255
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 957
-//        sendevent /dev/input/event0 3 54 1256
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 966
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 974
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 986
-//        sendevent /dev/input/event0 3 54 1257
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 998
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1015
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1022
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1024
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1037
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1043
-//        sendevent /dev/input/event0 3 54 1256
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1050
-//        sendevent /dev/input/event0 3 54 1255
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1062
-//        sendevent /dev/input/event0 3 54 1254
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1073
-//        sendevent /dev/input/event0 3 54 1253
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1082
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1095
-//        sendevent /dev/input/event0 3 54 1252
-//        sendevent /dev/input/event0 3 49 5
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1102
-//        sendevent /dev/input/event0 3 54 1251
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1110
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1117
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1123
-//        sendevent /dev/input/event0 3 54 1250
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1134
-//        sendevent /dev/input/event0 3 54 1249
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1144
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1154
-//        sendevent /dev/input/event0 3 54 1248
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1166
-//        sendevent /dev/input/event0 3 54 1247
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1174
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1185
-//        sendevent /dev/input/event0 3 54 1246
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1193
-//        sendevent /dev/input/event0 3 54 1245
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1199
-//        sendevent /dev/input/event0 3 54 1244
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1208
-//        sendevent /dev/input/event0 3 54 1243
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1217
-//        sendevent /dev/input/event0 3 54 1242
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1227
-//        sendevent /dev/input/event0 3 54 1241
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1240
-//        sendevent /dev/input/event0 3 54 1240
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1249
-//        sendevent /dev/input/event0 3 54 1239
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1258
-//        sendevent /dev/input/event0 3 54 1238
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1264
-//        sendevent /dev/input/event0 3 54 1237
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1271
-//        sendevent /dev/input/event0 3 54 1236
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1281
-//        sendevent /dev/input/event0 3 54 1234
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1289
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1294
-//        sendevent /dev/input/event0 3 54 1233
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1307
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1311
-//        sendevent /dev/input/event0 3 54 1232
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1321
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1329
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 54 1231
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1339
-//        sendevent /dev/input/event0 3 54 1232
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1343
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1347
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1350
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1351
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1353
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1355
-//        sendevent /dev/input/event0 3 54 1233
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1356
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1357
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1359
-//        sendevent /dev/input/event0 0 0 0
-//        sendevent /dev/input/event0 3 53 1360
-//        sendevent /dev/input/event0 0 0 0

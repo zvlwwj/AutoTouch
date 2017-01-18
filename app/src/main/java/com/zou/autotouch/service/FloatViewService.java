@@ -6,7 +6,10 @@ import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.IBinder;
 import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 
 import com.zou.autotouch.application.ATApplication;
 import com.zou.autotouch.utils.UIUtils;
@@ -19,7 +22,8 @@ import com.zou.autotouch.view.FloatBall;
 public class FloatViewService extends Service {
     private static final String TAG = "FloatViewService";
     private WindowManager mWindowManager;
-    private WindowManager.LayoutParams params;
+    private WindowManager.LayoutParams params_ball;
+    private WindowManager.LayoutParams params_list;
     private FloatBall floatBall;
     private static final int MARGING_LEFT=15;
     private static final int MARGING_TOP=15;
@@ -41,21 +45,21 @@ public class FloatViewService extends Service {
         //获取WindowManager
         mWindowManager=(WindowManager)getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
         floatBall = new FloatBall(this);
-        params = ((ATApplication)getApplication()).getwmParams();
+        params_ball = ((ATApplication)getApplication()).getwmParams();
 
-        params.type= WindowManager.LayoutParams.TYPE_TOAST;     // 系统提示类型,重要
-        params.format= PixelFormat.RGBA_8888;
-        params.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+        params_ball.type= WindowManager.LayoutParams.TYPE_TOAST;     // 系统提示类型,重要
+        params_ball.format= PixelFormat.RGBA_8888;
+        params_ball.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
                 | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
 
-        params.gravity= Gravity.LEFT| Gravity.TOP;   //调整悬浮窗口至左上角
+        params_ball.gravity= Gravity.LEFT| Gravity.TOP;   //调整悬浮窗口至左上角
         //以屏幕左上角为原点，设置x、y初始值
-        params.x=UIUtils.dp2px(MARGING_LEFT,getApplicationContext());
-        params.y=UIUtils.dp2px(MARGING_TOP,getApplicationContext());
+        params_ball.x=UIUtils.dp2px(MARGING_LEFT,getApplicationContext());
+        params_ball.y=UIUtils.dp2px(MARGING_TOP,getApplicationContext());
 
-        params.width= UIUtils.dp2px(FloatBall.WIDTH,getApplicationContext());
-        params.height=UIUtils.dp2px(FloatBall.HEIGHT,getApplicationContext());
-        mWindowManager.addView(floatBall, params);
+        params_ball.width= UIUtils.dp2px(FloatBall.WIDTH,getApplicationContext());
+        params_ball.height=UIUtils.dp2px(FloatBall.HEIGHT,getApplicationContext());
+        mWindowManager.addView(floatBall, params_ball);
     }
 
     private void setListener() {
@@ -72,7 +76,35 @@ public class FloatViewService extends Service {
 
             @Override
             public void play() {
-                session.play();
+//                session.play();
+            }
+
+            @Override
+            public void showList() {
+                Button btn = new Button(FloatViewService.this);
+                btn.setText("test");
+                btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        session.play();
+                    }
+                });
+                params_list = new WindowManager.LayoutParams();
+
+                params_list.type= WindowManager.LayoutParams.TYPE_TOAST;     // 系统提示类型,重要
+                params_list.format= PixelFormat.RGBA_8888;
+                params_list.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                        | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+
+                params_list.gravity= Gravity.LEFT| Gravity.TOP;   //调整悬浮窗口至左上角
+                //以屏幕左上角为原点，设置x、y初始值
+                params_list.x=UIUtils.dp2px(80,getApplicationContext());
+                params_list.y=UIUtils.dp2px(20,getApplicationContext());
+
+                params_list.width= UIUtils.dp2px(100,getApplicationContext());
+                params_list.height=UIUtils.dp2px(50,getApplicationContext());
+                mWindowManager.addView(btn, params_list);
+
             }
         });
     }
