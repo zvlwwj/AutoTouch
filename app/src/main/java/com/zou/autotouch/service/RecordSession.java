@@ -3,6 +3,7 @@ package com.zou.autotouch.service;
 import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.WindowManager;
 
 
 import java.io.File;
@@ -10,7 +11,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.BatchUpdateException;
 import java.util.ArrayList;
+import java.util.Timer;
 import java.util.concurrent.TimeoutException;
 
 import jackpal.androidterm.TermExec;
@@ -31,6 +34,8 @@ public class RecordSession {
     private boolean stop;
     private StringBuffer stringBuffer;
     private ArrayList<String> cmdstrs;
+    private ArrayList<Integer> EventEndCounts;
+    private ArrayList<StringBuffer> events;
     public RecordSession(){
         try {
             initializeSession();
@@ -182,23 +187,37 @@ public class RecordSession {
             mTermFd.close();
             in.close();
             out.close();
-        String[] inputs = stringBuffer.toString().split("\n");
+            String[] inputs = stringBuffer.toString().split("\n");
 
-        for(int i=0;i<inputs.length;i++){
-            if(cmdstrs == null){
-                cmdstrs = new ArrayList<String>();
+            for(int i=0;i<inputs.length;i++){
+                if(cmdstrs == null){
+                    cmdstrs = new ArrayList<String>();
+                }
+                if(inputs[i].startsWith("/dev/input/event")){
+                    String cmdstr = format(inputs[i]);
+                    cmdstrs.add(cmdstr);
+                    Log.i(TAG,"cmdstr before: "+cmdstr);
+                }
             }
-            if(inputs[i].startsWith("/dev/input/event")){
-                String cmdstr = format(inputs[i]);
-                cmdstrs.add(cmdstr);
-                Log.i(TAG,"cmdstr before: "+cmdstr);
+            removeLastClickEvent();//去除最后一个单机事件
+            EventEndCounts = new ArrayList<Integer>();
+            events = new ArrayList<>();
+            for(int i=0;i<cmdstrs.size();i++){
+                String cmd = cmdstrs.get(i);
+                if(cmd.contains("0 0 0")) {
+                    int lastEventEndCount = 0;
+                    StringBuffer buffer = new StringBuffer();
+                    if(EventEndCounts.size()>0) {
+                        lastEventEndCount = EventEndCounts.get(EventEndCounts.size()-1);
+                    }
+                    for(int j = lastEventEndCount;j<i;j++){
+                        buffer.append(cmdstrs.get(j)).append("\n");
+                    }
+                    events.add(buffer);
+                    EventEndCounts.add(i);
+                }
             }
-        }
-        removeLastClickEvent();//去除最后一个单机事件
 //        fixSendEvent();
-            for (String str: cmdstrs) {
-                Log.i(TAG,"Touch event motionEvent cmdstr after: "+str);
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -255,27 +274,55 @@ public class RecordSession {
     }
 
     public void play(){
-        StringBuffer buffer = null;
-        try {
-//            initializeSession();
-//            Thread.sleep(500);
-        for(int i=0;i<cmdstrs.size();i++){
-                String cmd = cmdstrs.get(i);
-//            Log.i(TAG, "cmdstr after: " + cmd);
-            if(buffer == null){
-                buffer = new StringBuffer();
+        for(int i=0;i<events.size();i++){
+            Command command = new Command(0, events.get(i).toString());
+            try {
+                RootTools.getShell(true).add(command);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (TimeoutException e) {
+                e.printStackTrace();
+            } catch (RootDeniedException e) {
+                e.printStackTrace();
             }
-            buffer.append(cmd).append("\n");
         }
-            Command command = new Command(0, buffer.toString());
+    }
+
+    public void touchdown(int x,int y){
+        Command command = new Command(0, "sendevent /dev/input/event0 3 57 4246\nsendevent /dev/input/event0 1 330 1\nsendevent /dev/input/event0 1 325 1\nsendevent /dev/input/event0 3 53 "+x+"\nsendevent /dev/input/event0 3 54 "+y+"\nsendevent /dev/input/event0 0 0 0\n");
+        try {
             RootTools.getShell(true).add(command);
         } catch (IOException e) {
             e.printStackTrace();
-        } /*catch (InterruptedException e) {
+        } catch (TimeoutException e) {
             e.printStackTrace();
-        }*/ catch (RootDeniedException e) {
+        } catch (RootDeniedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void touchmove(int x,int y){
+        Command command = new Command(0,"sendevent /dev/input/event0 3 53 "+x+"\nsendevent /dev/input/event0 3 54 "+y+"\n");
+        try {
+            RootTools.getShell(true).add(command);
+        } catch (IOException e) {
             e.printStackTrace();
         } catch (TimeoutException e) {
+            e.printStackTrace();
+        } catch (RootDeniedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void touchup(){
+        Command command = new Command(0,"sendevent /dev/input/event0 3 57 -1\nsendevent /dev/input/event0 1 330 0\nsendevent /dev/input/event0 1 325 0\nsendevent /dev/input/event0 0 0 0\n");
+        try {
+            RootTools.getShell(true).add(command);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        } catch (RootDeniedException e) {
             e.printStackTrace();
         }
     }
