@@ -12,7 +12,8 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk{
             moduleName "libhello"
-            abiFilters "all"
+            abiFilters "armeabi"
+            ldLibs 'log'
         }
     }
     buildTypes {

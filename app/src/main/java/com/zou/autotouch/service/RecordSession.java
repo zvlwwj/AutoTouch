@@ -378,15 +378,21 @@ public class RecordSession {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-        Command command = new Command(0,"/data/data/com.zou.autotouch/lib/libhello.so");
-        try {
-            RootTools.getShell(true).add(command);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (TimeoutException e) {
-            e.printStackTrace();
-        } catch (RootDeniedException e) {
-            e.printStackTrace();
-        }
+        new Thread(){
+            @Override
+            public void run() {
+                Command command = new Command(0,"/data/data/com.zou.autotouch/lib/libhello.so");
+                try {
+                    RootTools.getShell(true).add(command);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (TimeoutException e) {
+                    e.printStackTrace();
+                } catch (RootDeniedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+
     }
 }
