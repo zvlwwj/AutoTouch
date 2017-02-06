@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, FloatViewService.class);
         startService(intent);
     }
+
     private void initView(){
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
         Fragment fragment = GestureRecordedFragment.newInstance();

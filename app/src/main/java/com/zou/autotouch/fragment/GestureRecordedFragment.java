@@ -52,7 +52,7 @@ public class GestureRecordedFragment extends Fragment {
         btn_test.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                session.play();
+                session.test();
             }
         });
         mView.setOnTouchListener(new View.OnTouchListener() {
