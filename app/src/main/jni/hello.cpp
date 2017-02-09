@@ -1,7 +1,7 @@
-#include <android/log.h>
+#include <stdio.h>
 
-int main (int argc, const char* argv[])
+int main ()
 {
-    __android_log_print(ANDROID_LOG_INFO, "JNIMsg", "helloword");
+   printf("Hello world!\n");
     return 0;
 }

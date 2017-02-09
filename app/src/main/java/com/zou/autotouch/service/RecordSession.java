@@ -6,6 +6,8 @@ import android.util.Log;
 import android.view.WindowManager;
 
 
+import com.zou.autotouch.ShellProcess;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -381,16 +383,7 @@ public class RecordSession {
         new Thread(){
             @Override
             public void run() {
-                Command command = new Command(0,"/data/data/com.zou.autotouch/lib/libhello.so");
-                try {
-                    RootTools.getShell(true).add(command);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (TimeoutException e) {
-                    e.printStackTrace();
-                } catch (RootDeniedException e) {
-                    e.printStackTrace();
-                }
+                ShellProcess.execCommand("/data/data/com.zou.autotouch/lib/libhello.so", true);
             }
         }.start();
 
